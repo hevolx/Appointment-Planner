@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { ContactsPage } from './ContactsPage';
@@ -44,7 +44,9 @@ it('indicates a duplicate when the name matches an existing contact', async () =
 
   await userEvent.click(screen.getByTestId('set-name'));
 
-  expect(screen.getByTestId('contact-form').dataset.duplicate).toBe('true');
+  await waitFor(() => {
+    expect(screen.getByTestId('contact-form').dataset.duplicate).toBe('true');
+  });
 });
 
 it('calls addContact on submit when name is not a duplicate', async () => {
@@ -63,6 +65,9 @@ it('does not call addContact on submit when name is a duplicate', async () => {
   render(<ContactsPage contacts={contacts} addContact={addContact} />);
 
   await userEvent.click(screen.getByTestId('set-name'));
+  await waitFor(() => {
+    expect(screen.getByTestId('contact-form').dataset.duplicate).toBe('true');
+  });
   await userEvent.click(screen.getByTestId('submit'));
 
   expect(addContact).not.toHaveBeenCalled();
